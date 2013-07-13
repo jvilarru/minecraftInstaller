@@ -14,7 +14,7 @@
     <echo>Adding files to jar...</echo>
     <jar destfile="dist/minecraftInstaller.jar" update="true">
         <fileset dir="${basedir}">
-            <include name="files/*"/>
+            <include name="files.zip"/>
         </fileset>
     </jar>
     </target>

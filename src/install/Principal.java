@@ -1,13 +1,13 @@
 package install;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipInputStream;
 import javax.swing.JOptionPane;
 
 /**
@@ -17,7 +17,8 @@ import javax.swing.JOptionPane;
 public class Principal extends javax.swing.JFrame {
 
     private String separator, name, dir, os, home;
-    private File installDir, inputDir;
+    private File installDir;
+    private InputStream inputZip;
     private fileCopy copiador;
 
     public enum osType {
@@ -36,52 +37,33 @@ public class Principal extends javax.swing.JFrame {
         name = System.getProperty("user.name");
         dir = System.getProperty("user.dir");
         home = System.getProperty("user.home");
-        inputDir = new File(dir + separator + "files");
         
-        File f = new File(File.class.getResource("/files/prova.txt").getFile());
-//        if (f.exists()){
-            System.out.println(f.getAbsolutePath());
-//        }
+        inputZip = this.getClass().getResourceAsStream("/" + "files.zip");
 
-//        InputStream stream = File.class.getResourceAsStream("/files/prova.txt");
-//    if (stream == null) {
-//        System.out.println("merda");
-//        System.exit(0);
-//    }
-//    OutputStream resStreamOut;
-//    int readBytes;
-//    byte[] buffer = new byte[4096];
-//    try {
-//        resStreamOut = new FileOutputStream(new File(home+separator+"prova.txt"));
-//        while ((readBytes = stream.read(buffer)) > 0) {
-//            resStreamOut.write(buffer, 0, readBytes);
-//        }
-//    } catch (IOException e1) {
-//        // TODO Auto-generated catch block
-//        e1.printStackTrace();
-//    }
         jTextArea1.setText("Hello " + name);
-        addText(dir + separator + "files");
 
-//        if (os.contains("windows")) {
-//            installDir = new File(home + separator + "AppData" + separator + "Roaming" + separator + ".minecraft");
-//            targetOs = osType.WINDOWS;
-//        } else if (os.contains("linux")) {
-//            installDir = new File(home + separator + ".minecraft");
-//            targetOs = osType.LINUX;
-//        } else if (os.contains("mac")) {
-//            installDir = new File(home + separator + "Library" + separator + "Application Support" + separator + "minecraft");
-//            targetOs = osType.MAC;
-//        } else {
-//            addText("Your operative system is not supported");
-//        }
-//
-//        if (!inputDir.exists()) {
-//            addText("No existeix la carpeta d'origen dels fitxers");
-//        }
-//        copiador = new fileCopy(installDir, inputDir, jProgressBar1);
-//        copiador = new fileCopy(inputDir, installDir,jProgressBar1);
-//        copiador = new fileCopy(inputDir, new File(home + separator + "proves"), jProgressBar1);
+        if (os.contains("windows")) {
+            installDir = new File(home + separator + "AppData" + separator + "Roaming" + separator + ".minecraft");
+            targetOs = osType.WINDOWS;
+        } else if (os.contains("linux")) {
+            installDir = new File(home + separator + ".minecraft");
+            targetOs = osType.LINUX;
+        } else if (os.contains("mac")) {
+            installDir = new File(home + separator + "Library" + separator + "Application Support" + separator + "minecraft");
+            targetOs = osType.MAC;
+        } else {
+            addText("Your operative system is not supported");
+        }
+
+        if (inputZip == null) {
+            addText("No existeix l'arxiu files.zip");
+        }
+
+        File dest = new File(home + separator + "hola");
+        dest.mkdir();
+
+
+        copiador = new fileCopy(installDir, inputZip, jProgressBar1, separator);
 
 
     }
@@ -175,7 +157,7 @@ public class Principal extends javax.swing.JFrame {
             "Yes",};
         int opt = JOptionPane.showOptionDialog(this,
                 "Do you really want to exit?",
-                "A Silly Question",
+                "Minecraft Installer",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.CLOSED_OPTION,
                 null,
@@ -239,7 +221,7 @@ public class Principal extends javax.swing.JFrame {
                 try {
                     new Principal().setVisible(true);
                 } catch (URISyntaxException ex) {
-                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                    System.err.println("ERROR Creating the form" + ex.getMessage());
                 }
             }
         });
