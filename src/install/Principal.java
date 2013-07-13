@@ -1,13 +1,14 @@
 package install;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTextArea;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,7 +17,8 @@ import javax.swing.JTextArea;
 public class Principal extends javax.swing.JFrame {
 
     private String separator, name, dir, os, home;
-    private File installDir;
+    private File installDir, inputDir;
+    private fileCopy copiador;
 
     public enum osType {
 
@@ -27,30 +29,61 @@ public class Principal extends javax.swing.JFrame {
     /**
      * Creates new form Principal
      */
-    public Principal() {
+    public Principal() throws URISyntaxException {
         initComponents();
         separator = System.getProperty("file.separator");
         os = System.getProperty("os.name").toLowerCase();
         name = System.getProperty("user.name");
         dir = System.getProperty("user.dir");
         home = System.getProperty("user.home");
+        inputDir = new File(dir + separator + "files");
+        
+        File f = new File(File.class.getResource("/files/prova.txt").getFile());
+//        if (f.exists()){
+            System.out.println(f.getAbsolutePath());
+//        }
 
+//        InputStream stream = File.class.getResourceAsStream("/files/prova.txt");
+//    if (stream == null) {
+//        System.out.println("merda");
+//        System.exit(0);
+//    }
+//    OutputStream resStreamOut;
+//    int readBytes;
+//    byte[] buffer = new byte[4096];
+//    try {
+//        resStreamOut = new FileOutputStream(new File(home+separator+"prova.txt"));
+//        while ((readBytes = stream.read(buffer)) > 0) {
+//            resStreamOut.write(buffer, 0, readBytes);
+//        }
+//    } catch (IOException e1) {
+//        // TODO Auto-generated catch block
+//        e1.printStackTrace();
+//    }
         jTextArea1.setText("Hello " + name);
+        addText(dir + separator + "files");
+
+//        if (os.contains("windows")) {
+//            installDir = new File(home + separator + "AppData" + separator + "Roaming" + separator + ".minecraft");
+//            targetOs = osType.WINDOWS;
+//        } else if (os.contains("linux")) {
+//            installDir = new File(home + separator + ".minecraft");
+//            targetOs = osType.LINUX;
+//        } else if (os.contains("mac")) {
+//            installDir = new File(home + separator + "Library" + separator + "Application Support" + separator + "minecraft");
+//            targetOs = osType.MAC;
+//        } else {
+//            addText("Your operative system is not supported");
+//        }
+//
+//        if (!inputDir.exists()) {
+//            addText("No existeix la carpeta d'origen dels fitxers");
+//        }
+//        copiador = new fileCopy(installDir, inputDir, jProgressBar1);
+//        copiador = new fileCopy(inputDir, installDir,jProgressBar1);
+//        copiador = new fileCopy(inputDir, new File(home + separator + "proves"), jProgressBar1);
 
 
-
-        if (os.contains("windows")) {
-            installDir = new File(home + separator + "AppData" + separator + "Roaming" + separator + ".minecraft");
-            targetOs = osType.WINDOWS;
-        } else if (os.contains("linux")) {
-            installDir = new File(home + separator + ".minecraft");
-            targetOs = osType.LINUX;
-        } else if (os.contains("mac")) {
-            installDir = new File(home + separator + "Library" + separator + "Application Support" + separator + "minecraft");
-            targetOs = osType.MAC;
-        } else {
-            addText(jTextArea1, "Your operative system is not supported");
-        }
     }
 
     /**
@@ -62,11 +95,23 @@ public class Principal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jDialog1 = new javax.swing.JDialog();
         jProgressBar1 = new javax.swing.JProgressBar();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -126,47 +171,24 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        //TODO preguntar confirmacion
-        System.exit(0);
+        Object[] options = {"No",
+            "Yes",};
+        int opt = JOptionPane.showOptionDialog(this,
+                "Do you really want to exit?",
+                "A Silly Question",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.CLOSED_OPTION,
+                null,
+                options,
+                options[0]);
+        if (opt == 1) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        File origin = new File(dir + separator + "files");
-        String files[] = origin.list();
-        File input, output;
-        FileInputStream in;
-        FileOutputStream out;
-        int data;
-        jProgressBar1.setMaximum(files.length);
-        jProgressBar1.setMinimum(0);
-        int i=0;
-        for (String target : files) {
-            try {
-                input = new File(origin, target);
-                output = new File(installDir, target);
-                in = new FileInputStream(input);
-                out = new FileOutputStream(output);
-                
-                while ((data = in.read()) != -1) {
-                    out.write(data);
-                }
-                in.close();
-                out.close();
-                jProgressBar1.setValue(++i);
-            } catch (FileNotFoundException ex) {
-                addText(jTextArea1, "Error en la copia d'arxius");
-                addText(jTextArea1, "Fitxer Error = " + target);
-                addText(jTextArea1, "Directori d'instalació = " + installDir.getAbsolutePath());
-                addText(jTextArea1, "Directori source = " + origin.getAbsolutePath());
-                addText(jTextArea1, ex.getMessage());
-            } catch (IOException ex) {
-                addText(jTextArea1, "Error d'entrada/sortida");
-                addText(jTextArea1, "Fitxer Error = " + target);
-                addText(jTextArea1, "Directori d'instalació = " + installDir.getAbsolutePath());
-                addText(jTextArea1, "Directori source = " + origin.getAbsolutePath());
-                addText(jTextArea1, ex.getMessage());
-            }
-        }
+        Thread t = new Thread(copiador);
+        t.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -214,19 +236,24 @@ public class Principal extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Principal().setVisible(true);
+                try {
+                    new Principal().setVisible(true);
+                } catch (URISyntaxException ex) {
+                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JDialog jDialog1;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private static javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 
-    private void addText(JTextArea text, String message) {
-        text.setText(text.getText() + "\n" + message);
+    public static void addText(String message) {
+        jTextArea1.setText(jTextArea1.getText() + "\n" + message);
     }
 }
