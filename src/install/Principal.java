@@ -1,13 +1,8 @@
 package install;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.zip.ZipInputStream;
 import javax.swing.JOptionPane;
 
 /**
@@ -20,6 +15,17 @@ public class Principal extends javax.swing.JFrame {
     private File installDir;
     private InputStream inputZip;
     private fileCopy copiador;
+    private boolean ready;
+
+    private void removeRecursively(File f) {
+        if (f.isDirectory()) {
+            for (File ff : f.listFiles()) {
+                removeRecursively(ff);
+            }
+        } else {
+            f.delete();
+        }
+    }
 
     public enum osType {
 
@@ -32,40 +38,45 @@ public class Principal extends javax.swing.JFrame {
      */
     public Principal() throws URISyntaxException {
         initComponents();
+
+        ready = false;
         separator = System.getProperty("file.separator");
         os = System.getProperty("os.name").toLowerCase();
         name = System.getProperty("user.name");
         dir = System.getProperty("user.dir");
         home = System.getProperty("user.home");
-        
+
         inputZip = this.getClass().getResourceAsStream("/" + "files.zip");
+        if (inputZip == null) {
+            addText("No existeix l'arxiu files.zip");
+        } else {
+            ready = true;
+        }
 
         jTextArea1.setText("Hello " + name);
 
         if (os.contains("windows")) {
             installDir = new File(home + separator + "AppData" + separator + "Roaming" + separator + ".minecraft");
             targetOs = osType.WINDOWS;
+            ready = true;
         } else if (os.contains("linux")) {
             installDir = new File(home + separator + ".minecraft");
             targetOs = osType.LINUX;
+            ready = true;
         } else if (os.contains("mac")) {
             installDir = new File(home + separator + "Library" + separator + "Application Support" + separator + "minecraft");
             targetOs = osType.MAC;
+            ready = true;
         } else {
             addText("Your operative system is not supported");
         }
-
-        if (inputZip == null) {
-            addText("No existeix l'arxiu files.zip");
+        //proves
+        installDir = new File(dir + separator + "penes");
+        if (installDir.exists()) {
+            System.out.println("existeix");
+        } else {
+            System.out.println("no existeix");
         }
-
-        File dest = new File(home + separator + "hola");
-        dest.mkdir();
-
-
-        copiador = new fileCopy(installDir, inputZip, jProgressBar1, separator);
-
-
     }
 
     /**
@@ -169,8 +180,34 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Thread t = new Thread(copiador);
-        t.start();
+        if (ready) {
+            if (installDir.exists()) {
+                Object[] options = {"No",
+                    "Yes",};
+                int opt = JOptionPane.showOptionDialog(this,
+                        "Installation folder already exists, you want to remove it and continue the installation?",
+                        "Minecraft Installer",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.CLOSED_OPTION,
+                        null,
+                        options,
+                        options[1]);
+                if (opt == 1) {
+                    removeRecursively(installDir);
+                    installDir.mkdir();
+                    copiador = new fileCopy(installDir, inputZip, jProgressBar1, separator);
+                    Thread t = new Thread(copiador);
+                    t.start();
+                }
+            } else {
+                installDir.mkdir();
+                copiador = new fileCopy(installDir, inputZip, jProgressBar1, separator);
+                Thread t = new Thread(copiador);
+                t.start();
+            }
+        } else {
+            addText("Your system is not ready for installation");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
