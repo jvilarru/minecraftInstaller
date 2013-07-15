@@ -40,19 +40,20 @@ public class fileCopy implements Runnable {
 
     @Override
     public void run() {
-        try {
-            //        length = inputZip.length();
-            //        barra.setMaximum((int) length);
-            //        Principal.addText("Decompressing " + inputZip.getName() + " with a total length of " + length + " bytes");
-            //        barra.setMinimum(0);
-            ////        fileDecompresser(inputZip, installDir);
-            //        Principal.addText("Finished!!");
-            zipDecompresser(inputZip, installDir);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(fileCopy.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(fileCopy.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            //        length = inputZip.length();
+//            //        barra.setMaximum((int) length);
+//            //        Principal.addText("Decompressing " + inputZip.getName() + " with a total length of " + length + " bytes");
+//            //        barra.setMinimum(0);
+//            ////        fileDecompresser(inputZip, installDir);
+//            //        Principal.addText("Finished!!");
+////            zipDecompresser(inputZip, installDir);
+////        } catch (FileNotFoundException ex) {
+////            Logger.getLogger(fileCopy.class.getName()).log(Level.SEVERE, null, ex);
+////        } catch (IOException ex) {
+////            Logger.getLogger(fileCopy.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        System.out.println("hola");
     }
 
 //    private void fileDecompresser(File zipOrigin, File dirDest) {
